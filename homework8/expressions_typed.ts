@@ -273,10 +273,13 @@ function evaluate_number(expr: NumExpr): Literal<number> {
  */
 function evaluate_string(expr: StringExpr): Literal<string> {
     function evaluate_concat(concat_expr: ConcatExpr): Literal<string> {
-        return make_literal(get_value(evaluate_string(get_slhs(concat_expr))) + get_value(evaluate_string(get_srhs(concat_expr))));
+        const first_string = get_value(evaluate_string(get_slhs(concat_expr)));
+        const second_string = get_value(evaluate_string(get_srhs(concat_expr)));
+        const str = first_string + second_string;
+        return make_literal(str);
     }
     function evaluate_stringify(expr: StringifyExpr): Literal<string> {
-        return make_literal(evaluate_number(get_narg(expr)).toString());
+        return make_literal(get_value(evaluate_number(get_narg(expr))).toString());
     }
     return is_concat_expr(expr)
         ? evaluate_concat(expr)

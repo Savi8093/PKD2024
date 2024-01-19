@@ -231,10 +231,13 @@ function evaluate_number(expr) {
  */
 function evaluate_string(expr) {
     function evaluate_concat(concat_expr) {
-        return make_literal(get_value(evaluate_string(get_slhs(concat_expr))) + get_value(evaluate_string(get_srhs(concat_expr))));
+        var first_string = get_value(evaluate_string(get_slhs(concat_expr)));
+        var second_string = get_value(evaluate_string(get_srhs(concat_expr)));
+        var str = first_string + second_string;
+        return make_literal(str);
     }
     function evaluate_stringify(expr) {
-        return make_literal(evaluate_number(get_narg(expr)).toString());
+        return make_literal(get_value(evaluate_number(get_narg(expr))).toString());
     }
     return is_concat_expr(expr)
         ? evaluate_concat(expr)
