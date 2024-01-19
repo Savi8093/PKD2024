@@ -272,11 +272,11 @@ function evaluate_number(expr: NumExpr): Literal<number> {
  * @returns the result of evaluating expr.
  */
 function evaluate_string(expr: StringExpr): Literal<string> {
-    function evaluate_concat(concat_expr: ConcatExpr): any {
-        // your code here
+    function evaluate_concat(concat_expr: ConcatExpr): Literal<string> {
+        return make_literal(get_value(evaluate_string(get_slhs(concat_expr))) + get_value(evaluate_string(get_srhs(concat_expr))));
     }
-    function evaluate_stringify(expr: StringifyExpr): any {
-        // your code here
+    function evaluate_stringify(expr: StringifyExpr): Literal<string> {
+        return make_literal(evaluate_number(get_narg(expr)).toString());
     }
     return is_concat_expr(expr)
         ? evaluate_concat(expr)

@@ -216,7 +216,7 @@ function evaluate_number(expr) {
         }
     }
     function evaluate_length(expr) {
-        return make_literal(get_sarg(expr).length);
+        return make_literal(get_value(evaluate_string(get_sarg(expr))).length);
     }
     return is_nbinary(expr)
         ? evaluate_binary(expr)
@@ -231,7 +231,7 @@ function evaluate_number(expr) {
  */
 function evaluate_string(expr) {
     function evaluate_concat(concat_expr) {
-        // your code here
+        return make_literal(get_value(evaluate_string(get_slhs(concat_expr))) + get_value(evaluate_string(get_srhs(concat_expr))));
     }
     function evaluate_stringify(expr) {
         // your code here
