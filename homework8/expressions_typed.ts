@@ -248,12 +248,12 @@ function get_value<T>(expr: Literal<T>): T {
  */
 function evaluate_number(expr: NumExpr): Literal<number> {
     function evaluate_binary(bin_expr: BinaryNExpr): Literal<number> {
-        const lhs = evaluate_number(get_nlhs(bin_expr));
-        const rhs = evaluate_number(get_nrhs(bin_expr));
+        const lhs: number = get_value(evaluate_number(get_nlhs(bin_expr)));
+        const rhs: number = get_value(evaluate_number(get_nrhs(bin_expr)));
         if (is_nadd(bin_expr)) {
-            return make_literal(get_value(lhs) + get_value(rhs));
+            return make_literal(lhs + rhs);
         } else {
-            return make_literal(get_value(lhs) - get_value(rhs));
+            return make_literal(lhs - rhs);
         }
     }
     function evaluate_length(expr: LengthExpr): Literal<number> {
@@ -273,9 +273,9 @@ function evaluate_number(expr: NumExpr): Literal<number> {
  */
 function evaluate_string(expr: StringExpr): Literal<string> {
     function evaluate_concat(concat_expr: ConcatExpr): Literal<string> {
-        const first_string = get_value(evaluate_string(get_slhs(concat_expr)));
-        const second_string = get_value(evaluate_string(get_srhs(concat_expr)));
-        const str = first_string + second_string;
+        const first_string: string = get_value(evaluate_string(get_slhs(concat_expr)));
+        const second_string: string = get_value(evaluate_string(get_srhs(concat_expr)));
+        const str: string = first_string + second_string;
         return make_literal(str);
     }
     function evaluate_stringify(expr: StringifyExpr): Literal<string> {

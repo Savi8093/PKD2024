@@ -206,13 +206,13 @@ function get_value(expr) {
  */
 function evaluate_number(expr) {
     function evaluate_binary(bin_expr) {
-        var lhs = evaluate_number(get_nlhs(bin_expr));
-        var rhs = evaluate_number(get_nrhs(bin_expr));
+        var lhs = get_value(evaluate_number(get_nlhs(bin_expr)));
+        var rhs = get_value(evaluate_number(get_nrhs(bin_expr)));
         if (is_nadd(bin_expr)) {
-            return make_literal(get_value(lhs) + get_value(rhs));
+            return make_literal(lhs + rhs);
         }
         else {
-            return make_literal(get_value(lhs) - get_value(rhs));
+            return make_literal(lhs - rhs);
         }
     }
     function evaluate_length(expr) {
