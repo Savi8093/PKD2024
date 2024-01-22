@@ -1,23 +1,19 @@
 // TODO: your imports here
 // (only list, stack, queue_immutable, or queue_array from ../lib are allowed)
-import {
-    List, Stack, Queue_immutable, Queue_array
-} from '../lib';
-import { empty } from '../lib/stack';
-//import { Stack } from '../lib/stack';
+import * as stack from '../lib/stack';
 
 /**
  * Stores the history of visited webpages in a browser for forwards and
  * backwards navigation.
  * 
  */
-export type BrowserHistory<T> = [Stack<T>, T | null, Stack<T>];
+export type BrowserHistory = [stack.Stack<string>, string | null, stack.Stack<string>];
 
 /**
  * Creates a fresh browser history.
  * @returns Creates an empty browser history.
  */
-export function new_browser_history(): BrowserHistory<string> {
+export function new_browser_history(): BrowserHistory {
     return [empty<string>(), null, empty<string>()];
 
 }
@@ -28,6 +24,9 @@ export function new_browser_history(): BrowserHistory<string> {
  * @returns The URL of the currently open website in history.
  */
 export function current_page(history: BrowserHistory): string {
+    if (history[1] === null) {
+
+    }
     return history[1];
 }
 
