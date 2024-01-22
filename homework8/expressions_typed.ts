@@ -297,19 +297,19 @@ const expr1 = make_nsub(make_nadd(make_literal(5),
                                 make_nsub(make_literal(6), make_literal(8))),
                        make_nadd(make_literal(5),
                                 make_nadd(make_literal(6), make_literal(8))));
-console.log("result should be -16: " + get_value(evaluate_number(expr1)));
+console.log("result should be -16: " + evaluate_number(expr1));
 
 const expr2 = make_nadd(make_length_expr(make_literal("hello")),
                        make_nadd(make_nsub(make_literal(6),
                                            make_nsub(make_literal(8), make_literal(5))),
                                  make_nadd(make_literal(6), make_literal(8))));
-console.log("result should be 22: " + get_value(evaluate_number(expr2)));
+console.log("result should be 22: " + evaluate_number(expr2));
 
 const zero = make_stringify_expr(make_literal(0));
 const expr3 = make_concat_expr(make_literal("hello"),
                                make_concat_expr(zero,
                                                 make_literal("world")));
-console.log("result should be hello0world: " + get_value(evaluate_string(expr3)));
+console.log("result should be hello0world: " + evaluate_string(expr3));
 
 // not possible
 //console.log(make_nadd(make_literal(1), make_literal("hello")));
