@@ -1,13 +1,16 @@
 // TODO: your imports here
 // (only list, stack, queue_immutable, or queue_array from ../lib are allowed)
-import * as stack from '../lib/stack';
+
+import {
+    Stack, empty, is_empty, display_stack, push, pop, top
+} from '../lib/stack';
 
 /**
  * Stores the history of visited webpages in a browser for forwards and
  * backwards navigation.
  * 
  */
-export type BrowserHistory = [stack.Stack<string>, string | null, stack.Stack<string>];
+export type BrowserHistory = [Stack<string>, string | null, Stack<string>];
 
 /**
  * Creates a fresh browser history.
