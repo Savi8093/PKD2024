@@ -8,10 +8,11 @@ import {
 /**
  * Stores the history of visited webpages in a browser for forwards and
  * backwards navigation.
- * 
+ * First stack is backward history, middle string is current page, last stack is forward history.
  */
 export type BrowserHistory = [Stack<string>, string, Stack<string>];
 
+// Message for empty history.
 export const empty_page: string = "404 does not exist";
 
 /**
