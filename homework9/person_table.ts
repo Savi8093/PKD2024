@@ -18,5 +18,7 @@ function toHashtable(people: People, relations: Relations): PersonTable {
     }
     const person_table: PersonTable = ph_empty<number, Person>(prime, probe_linear(hash));
     
-    return person_table;    
+    
+
+    return person_table;
 }
