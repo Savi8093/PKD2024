@@ -10,9 +10,12 @@ type Person = {
 };
 type PersonTable = ProbingHashtable<number, Person>;
 
-function toHashtable(people: People, relations: Relations): PersonTable{
+function toHashtable(people: People, relations: Relations): PersonTable {
+    const prime: number = 101;
+    function hash(key: number): number {
+        return key % prime;
+    }
+    const person_table: PersonTable = ph_empty<number, Person>(prime, probe_linear(hash));
     
+    return person_table;    
 }
-
-
-// tests
