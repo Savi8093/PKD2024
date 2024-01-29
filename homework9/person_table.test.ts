@@ -1,28 +1,37 @@
-import { toHashtable, People, Relations } from '../homework9/person_table';
+import { toHashtable, PersonTable, People, Relations, hash } from './person_table';
+import { hash_id, ph_empty, ph_insert, ph_lookup, probe_linear } from '../lib/hashtables';
 import { pair, list } from '../lib/list'
 
-test('my test', () => {
-    expect(validateTest1()).toBe(true);
+
+let persons: People = list(
+    pair(198212081234, "Oliver"), 
+    pair(199412081234, "Erik"),
+    pair(197412081234, "Anders"),
+    pair(200412081234, "Johanna"),
+    pair(194512081234, "Sandra")
+);
+
+let relations: Relations = list(
+    pair(198212081234, 199412081234),
+    pair(198212081234, 197412081234),
+    pair(198212081234, 194512081234)
+);
+
+let person_table = toHashtable(persons, relations);
+
+
+//console.log(empty_table);
+//console.log(toHashtable(persons, relations));
+
+test('empty persontable is empty', () => {
+    //expect(toHashtable(list(), list())).toBe(empty_table);
 });
 
-function validateTest1() : boolean {
+test('Person name correct', () => {
+    //expect(ph_lookup(person_table, 198212081234)?.name).toBe("Oliver");
+    //expect(ph_lookup(person_table, 199412081234)?.name).toBe("Erik");
+    //expect(ph_lookup(person_table, 197412081234)?.name).toBe("Anders");
+    //expect(ph_lookup(person_table, 200412081234)?.name).toBe("Johanna");
+    expect(ph_lookup(person_table, 194512081234)?.id).toBe("Sandra");
+});
 
-    var test: People = list(
-        pair(19821208, "Oliver"), 
-        pair(19941208, "Erik"),
-        pair(19741208, "Anders"),
-        pair(20041208, "Johanna"),
-        pair(19451208, "Sandra")
-    );
-
-    var relations: Relations = list(
-        pair(19821208, 19941208),
-        pair(19821208, 19741208),
-        pair(19821208, 19451208)
-    );
-
-    let response = toHashtable(test, relations);
-    console.log(JSON.stringify(response));
-
-    return true;
-}

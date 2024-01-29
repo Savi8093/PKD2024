@@ -1,6 +1,6 @@
 import { List, Pair, for_each, head, tail } from '../lib/list';
 import { ProbingHashtable, ph_empty, ph_delete, ph_insert, 
-            ph_lookup, probe_linear } from '../lib/hashtables';
+            ph_lookup, probe_linear, hash_id } from '../lib/hashtables';
 
 type Person = {
     id: number,
@@ -21,12 +21,13 @@ export type Relations = List<Pair<number, number>>;
 // 19941208 | 20041245
 // 19941208 | 19651568
 
-export function toHashtable(people: People, relations: Relations): PersonTable {
+const prime: number = 101;
+export function hash(key: number): number {
+    return key % prime;
+}
 
-    const prime: number = 101;
-    function hash(key: number): number {
-        return key % prime;
-    }
+export function toHashtable(people: People, relations: Relations): PersonTable {
+    
     const person_table: PersonTable = ph_empty<number, Person>(prime, probe_linear(hash));
 
     // Går igenom alla personer som ska läggas till
@@ -38,17 +39,17 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
         let parentRelations = relations?.map((rel) => {
             if (head(rel as Pair<number, number>) === ssn && ssn < tail(rel as Pair<number, number>)) { 
                 return tail(rel as Pair<number, number>);
-            }
+            } else {}
         }) as number[];
 
         // Filtrerar ut alla children för personen som ska läggas till
         let childrenRelations = relations?.map((rel) => {
             if (head(rel as Pair<number, number>) === ssn && ssn > tail(rel as Pair<number, number>)) { 
                 return tail(rel as Pair<number, number>);
-            }
+            } else {}
         }) as number[];
 
-        let person:Person = {
+        let person: Person = {
             id: ssn,
             name: name,
             parents: parentRelations,
