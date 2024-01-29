@@ -28,11 +28,17 @@ test('Returns undefined if person doesnt exist', () => {
 });
 
 test('Negative birthdates work', () => {
-    expect(ph_lookup(person_table, -290000001234)?.name).toBe("Gilgamesh");
+    expect(ph_lookup(person_table, -290000001234)).toEqual({ id: -290000001234,
+                                                             name: "Gilgamesh",
+                                                             parents: [],
+                                                             children: []});
 });
 
 test('Zeroes for unknown dates work', () => {
-    expect(ph_lookup(person_table, 130000001234)?.name).toBe("Hjördis");
+    expect(ph_lookup(person_table, 130000001234)).toEqual({ id: 130000001234,
+                                                            name: "Hjördis",
+                                                            parents: [],
+                                                            children: []});
 });
 
 test('Persons name is correct', () => {
