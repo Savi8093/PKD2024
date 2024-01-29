@@ -1,6 +1,5 @@
 import { List, Pair, for_each, head, tail } from '../lib/list';
-import { ProbingHashtable, ph_empty, ph_delete, ph_insert, 
-            ph_lookup, probe_linear } from '../lib/hashtables';
+import { ProbingHashtable, ph_empty, ph_delete, ph_insert, ph_lookup, probe_linear } from '../lib/hashtables';
 
 type Person = {
     id: number,
