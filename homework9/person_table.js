@@ -83,9 +83,6 @@ function descendants_helper(ht, id, des) {
             des.push(child);
             descendants_helper(ht, child, des);
         });
-        // children.forEach((child) => {
-        //     des.push(...descendants_helper(ht, child, des))
-        // });
     }
     else { }
     return des;
