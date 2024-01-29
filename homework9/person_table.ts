@@ -1,17 +1,18 @@
-import { List, Pair, for_each, head, tail } from '../lib/list';
+import { List, Pair, for_each, head, is_null, tail } from '../lib/list';
 import { ProbingHashtable, ph_empty, ph_delete, ph_insert, 
             ph_lookup, probe_linear, hash_id } from '../lib/hashtables';
 
-type Person = {
-    id: number,
+/* DO NOT MODIFY these type declarations */
+export type People = List<Pair<number,string>>;
+export type Relations = List<Pair<number,number>>;
+export type Person = {
+    id: number, // the identifier as described above
     name: string,
     parents: Array<number>,
     children: Array<number>
 };
-
-export type People = List<Pair<number,string>>;
-export type PersonTable = ProbingHashtable<number, Person>;
-export type Relations = List<Pair<number, number>>;
+export type PersonTable = ProbingHashtable<number,Person>;
+/* End of type declarations */
 
 // 19941208 | 20041245
 // 19981568 | 19721568
@@ -22,42 +23,71 @@ export type Relations = List<Pair<number, number>>;
 // 19941208 | 19651568
 
 const prime: number = 101;
+// Simple hash function
 export function hash(key: number): number {
     return key % prime;
 }
 
+/**
+ * Create a hash table of Person records based on given relations.
+ * @precondition All ids appearing in relations are in the people list.
+ * @param people peoples ids and names
+ * @param relations parent-child relations
+ * @return Returns a hash table with a Person record for each person from people
+ *     that includes all relationships according relations.
+ */
 export function toHashtable(people: People, relations: Relations): PersonTable {
+    const person_table: PersonTable = ph_empty<number,
+                                               Person>(prime,
+                                                       probe_linear(hash));
     
-    const person_table: PersonTable = ph_empty<number, Person>(prime, probe_linear(hash));
+    if (!is_null(people)) {
+        for (let xs: List<Pair<number,
+                               string>> = people;!is_null(xs); xs = tail(xs)) {
+            let name: string = tail(head(xs));
+            let ssn: number = head(head(xs));
+            
+            let parent_relations: Array<number> = [];
+            let parent_count = 0;
+            let child_relations: Array<number> =[];
+            let child_count = 0;
+            for (let ys = relations; !is_null(ys); ys = tail(ys)) {
+                let parent = head(head(ys));
+                let child = tail(head(ys));
+                if (parent === ssn) {
+                    child_relations[child_count] = child;
+                    child_count++;
+                } else {}
+                if (child === ssn) {
+                    parent_relations[parent_count] = parent;
+                    parent_count++;
+                } else {}
+            }
 
-    // Går igenom alla personer som ska läggas till
-    people?.forEach((item) => {
-        let ssn = head(item as Pair<number,string>);
-        let name = tail(item as Pair<number,string>);
-
-        // Filtrerar ut alla parents för personen som ska läggas till
-        let parentRelations = relations?.map((rel) => {
-            if (head(rel as Pair<number, number>) === ssn && ssn < tail(rel as Pair<number, number>)) { 
-                return tail(rel as Pair<number, number>);
-            } else {}
-        }) as number[];
-
-        // Filtrerar ut alla children för personen som ska läggas till
-        let childrenRelations = relations?.map((rel) => {
-            if (head(rel as Pair<number, number>) === ssn && ssn > tail(rel as Pair<number, number>)) { 
-                return tail(rel as Pair<number, number>);
-            } else {}
-        }) as number[];
-
-        let person: Person = {
-            id: ssn,
-            name: name,
-            parents: parentRelations,
-            children: childrenRelations
+            let person = {
+                id: ssn,
+                name,
+                parents: parent_relations,
+                children: child_relations
+            }
+            ph_insert(person_table, person.id, person);
         }
 
-        ph_insert(person_table, person.id, person);
-    });
-
+        
+    }
     return person_table;
+}
+
+
+/**
+ * Computes the descendants of a person.
+ * @param ht Relationships of people
+ * @param id Identification number of the person to compute the descendants for
+ * @returns Returns all the descendants of the person with ID id, according to
+ *     the relationships in ht, or undefined if the person with ID is is not
+ *     found in ht.
+ */
+export function descendants(ht: PersonTable, id: number): Array<number> | undefined {
+    // your code here (if you want to do Task 2)
+    return undefined;
 }
