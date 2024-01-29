@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toHashtable = exports.hash = void 0;
+exports.descendants = exports.toHashtable = exports.hash = void 0;
 var list_1 = require("../lib/list");
 var hashtables_1 = require("../lib/hashtables");
+/* End of type declarations */
 // 19941208 | 20041245
 // 19981568 | 19721568
 // 19941208 | 19651568
@@ -30,20 +31,16 @@ function toHashtable(people, relations) {
             var name_1 = (0, list_1.tail)((0, list_1.head)(xs));
             var ssn = (0, list_1.head)((0, list_1.head)(xs));
             var parent_relations = [];
-            var parent_count = 0;
             var child_relations = [];
-            var child_count = 0;
             for (var ys = relations; !(0, list_1.is_null)(ys); ys = (0, list_1.tail)(ys)) {
                 var parent_1 = (0, list_1.head)((0, list_1.head)(ys));
                 var child = (0, list_1.tail)((0, list_1.head)(ys));
                 if (parent_1 === ssn) {
-                    child_relations[child_count] = child;
-                    child_count++;
+                    child_relations.push(child);
                 }
                 else { }
                 if (child === ssn) {
-                    parent_relations[parent_count] = parent_1;
-                    parent_count++;
+                    parent_relations.push(parent_1);
                 }
                 else { }
             }
@@ -59,3 +56,37 @@ function toHashtable(people, relations) {
     return person_table;
 }
 exports.toHashtable = toHashtable;
+/**
+ * Computes the descendants of a person.
+ * @param ht Relationships of people
+ * @param id Identification number of the person to compute the descendants for
+ * @returns Returns all the descendants of the person with ID id, according to
+ *     the relationships in ht, or undefined if the person with ID is not
+ *     found in ht.
+ */
+function descendants(ht, id) {
+    if ((0, hashtables_1.ph_lookup)(ht, id) === undefined) {
+        return undefined;
+    }
+    else {
+        var des = [];
+        return descendants_helper(ht, id, des);
+    }
+}
+exports.descendants = descendants;
+function descendants_helper(ht, id, des) {
+    var _a;
+    // Check if children exist
+    var children = (_a = (0, hashtables_1.ph_lookup)(ht, id)) === null || _a === void 0 ? void 0 : _a.children;
+    if (children !== undefined) {
+        children.forEach(function (child) {
+            des.push(child);
+            descendants_helper(ht, child, des);
+        });
+        // children.forEach((child) => {
+        //     des.push(...descendants_helper(ht, child, des))
+        // });
+    }
+    else { }
+    return des;
+}
