@@ -14,14 +14,6 @@ export type Person = {
 export type PersonTable = ProbingHashtable<number,Person>;
 /* End of type declarations */
 
-// 19941208 | 20041245
-// 19981568 | 19721568
-// 19941208 | 19651568
-// 19861568 | 19911568
-
-// 19941208 | 20041245
-// 19941208 | 19651568
-
 const prime: number = 101;
 // Simple hash function
 export function hash(key: number): number {
@@ -42,6 +34,7 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
                                                        probe_linear(hash));
 
     if (!is_null(people)) {
+        // Goes through all people
         for (let xs: List<Pair<number,
                                string>> = people;!is_null(xs); xs = tail(xs)) {
             let name: string = tail(head(xs));
@@ -49,6 +42,8 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
 
             let parent_relations: Array<number> = [];
             let child_relations: Array<number> =[];
+            
+            // Goes through all relations
             for (let ys = relations; !is_null(ys); ys = tail(ys)) {
                 let parent = head(head(ys));
                 let child = tail(head(ys));
@@ -90,11 +85,12 @@ export function descendants(ht: PersonTable,
     }
 }
 
+// Helper function to descendants
 function descendants_helper(ht:PersonTable,
                             id: number,
                             des: Array<number>): Array<number> {
-    // Check if children exist
     let children = ph_lookup(ht, id)?.children;
+    // Check if children exist
     if (children !== undefined) {
         children.forEach((child) => {
             des.push(child);
