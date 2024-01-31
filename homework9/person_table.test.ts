@@ -1,5 +1,5 @@
-import { toHashtable, PersonTable, People, Relations, hash, descendants } from './person_table';
-import { hash_id, ph_empty, ph_insert, ph_lookup, probe_linear } from '../lib/hashtables';
+import { toHashtable, People, Relations, descendants } from './person_table';
+import { ph_lookup } from '../lib/hashtables';
 import { pair, list } from '../lib/list'
 
 
@@ -10,14 +10,16 @@ let persons: People = list(
     pair(200412081234, "Johanna"),
     pair(195512081234, "Sandra"),
     pair(-290000001234, "Gilgamesh"),
-    pair(130000001234, "Hjördis")
+    pair(130000001234, "Hjördis"),
+    pair(133000001234, "Gottfrid")
 );
 
 let relations: Relations = list(
     pair(198212081234, 199912081234),
     pair(198212081234, 200412081234),
     pair(195412081234, 198212081234),
-    pair(195512081234, 198212081234)
+    pair(195512081234, 198212081234),
+    pair(130000001234, 133000001234)
 );
 
 let person_table = toHashtable(persons, relations);
@@ -35,10 +37,11 @@ test('Negative birthdates work', () => {
 });
 
 test('Zeroes for unknown dates work', () => {
-    expect(ph_lookup(person_table, 130000001234)).toEqual({ id: 130000001234,
-                                                            name: "Hjördis",
-                                                            parents: [],
-                                                            children: []});
+    expect(ph_lookup(person_table,
+                     130000001234)).toEqual({ id: 130000001234,
+                                              name: "Hjördis",
+                                              parents: [],
+                                              children: [133000001234]});
 });
 
 test('Persons name is correct', () => {
@@ -73,6 +76,10 @@ test('Returns empty array if no descendants are found', () => {
     expect(descendants(person_table, 200412081234)).toEqual([]);
 });
 
+test('Returns one descendant if there only is one', () => {
+    expect(descendants(person_table, 130000001234)).toEqual([133000001234]);
+});
+
 test('Returns all direct descendants', () => {
     expect(descendants(person_table, 198212081234)).toEqual([199912081234,
                                                              200412081234]);
@@ -84,7 +91,5 @@ test('Returns all descendants and their descendants', () => {
                                                              200412081234]);
 });
 
-test('', () => {
-    // expect(descendants(person_table, 200300031234)).toBe(undefined);
-});
+
 
