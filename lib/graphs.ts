@@ -5,7 +5,7 @@ import {
 
 /**
  * A list of edges in a graph.
- * Each edge is a pair, where the head is the source of the edge, 
+ * Each edge is a pair, where the head is the source of the edge,
  * and the tail is the target.
  * @invariant the head and tail are non-negative integers
  * @invariant the list does not contain any duplicate edges
@@ -26,9 +26,9 @@ export function undirected(el: EdgeList): EdgeList {
     } else {
         const source = head(head(el));
         const target = tail(head(el))
-        return pair(pair(target, source), 
+        return pair(pair(target, source),
                     undirected(filter(edge => head(edge) !== target
-                                           || tail(edge) !== source, 
+                                           || tail(edge) !== source,
                                       tail(el))));
     }
 }
@@ -85,10 +85,10 @@ export function mg_from_edges(size: number, edges: EdgeList): MatrixGraph {
 
 
 /**
- * A graph in edge lists representation is 
+ * A graph in edge lists representation is
  *     an array of lists of target node ids.
  * The length of the array is the number of nodes.
- * @invariant Every target node id is a non-negative number 
+ * @invariant Every target node id is a non-negative number
  *     less than the length of the outer array.
  * @invariant None of the target node ids appears twice in the same list.
  */
@@ -117,7 +117,7 @@ export function lg_new(size: number): ListGraph {
  */
 export function lg_from_edges(size: number, edges: EdgeList): ListGraph {
     const result = lg_new(size);
-    for_each(p => result.adj[head(p)] = pair(tail(p), result.adj[head(p)]), 
+    for_each(p => result.adj[head(p)] = pair(tail(p), result.adj[head(p)]),
              edges);
     return result;
 }
