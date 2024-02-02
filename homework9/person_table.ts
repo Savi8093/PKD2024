@@ -36,13 +36,13 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
     if (!is_null(people)) {
         // Goes through all people
         for (let xs: List<Pair<number,
-                               string>> = people;!is_null(xs); xs = tail(xs)) {
+                               string>> = people; !is_null(xs); xs = tail(xs)) {
             let name: string = tail(head(xs));
             let ssn: number = head(head(xs));
 
             let parent_relations: Array<number> = [];
             let child_relations: Array<number> =[];
-            
+
             // Goes through all relations
             for (let ys = relations; !is_null(ys); ys = tail(ys)) {
                 let parent = head(head(ys));
