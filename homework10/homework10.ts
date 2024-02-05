@@ -72,8 +72,8 @@ export function lg_bfs_visit_order({adj, size}: ListGraph, initial: number = 0):
  */
 export function shortest_paths({adj, size}: ListGraph,
                                start: number,
-                               end: number): List<Path> | number {
-    const result  = build_array(size, _ => 0); // Initialize distances to -1
+                               end: number): List<Path> | Path {
+    const result  = build_array(size, _ => -1); // Initialize distances to -1
     const pending = empty<number>();
     const colour  = build_array(size, _ => white);
     const paths: List<Path> = list();
@@ -81,24 +81,40 @@ export function shortest_paths({adj, size}: ListGraph,
 
     // visit a white node
     function bfs_visit(current: number) {
+
         colour[current] = grey;
         result[current] = distance;
-        enqueue(current, pending);
+        //console.log(current, distance);
+        if (current === end) {
+            append(paths, list(current_path));
+        } else {
+            enqueue(current, pending);
+        }
     }
 
     bfs_visit(start);
+    const current_path: Path = empty<number>();
 
     while (!is_empty(pending)) {
         const current = qhead(pending);
+        enqueue(current, current_path);
         dequeue(pending);
         distance = result[current] + 1;
         for_each(bfs_visit, filter(node => colour[node] === white, adj[current]));
         colour[current] = black;
-    }
 
-    return result[end];
+    }
+    console.log(result);
+    return current_path;
 }
 
+const test_graph: ListGraph = {
+    size: 7,
+    adj: [list(1, 2), list(3, 5), list(3, 4), list(4),
+          list(5), list(6), list()]
+}
+
+console.log(shortest_paths(test_graph, 1, 5));
 
 
 // TASK 2
