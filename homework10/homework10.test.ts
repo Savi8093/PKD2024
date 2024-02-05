@@ -24,30 +24,30 @@ test('Returns no path', () => {
 });
 
 test('Shortest path from node 1 to 4 should be 1-3-4', () => {
-    const expected_path: Path = [1, 2, [3, 4]];
-    expect(shortest_paths(test_graph, 1, 4)).toEqual(2);
+    const expected_path: Path = [0, 3, [1, 3, 4]];
+    expect(shortest_paths(test_graph, 1, 4)).toEqual(list(expected_path));
 });
 
 test('Shortest path from node 0 to 4 should be 0-2-4', () => {
-    const expected_path: Path = [1, 2, [3, 4]];
-    expect(shortest_paths(test_graph, 0, 4)).toEqual(2);
+    const expected_path: Path = [0, 3, [0, 2, 4]];
+    expect(shortest_paths(test_graph, 0, 4)).toEqual(list(expected_path));
 });
 
 test('Shortest path from node 0 to 3 should be 0-1-3 and 0-2-3', () => {
-    // const expected_path_1: Path = [0, 2, [1, 3]];
-    // const expected_path_2: Path = [0, 2, [2, 3]];
-    // expect(shortest_paths(test_graph, 0, 3)).toEqual(list(expected_path_1,
-    //                                                       expected_path_2));
+    const expected_path_1: Path = [0, 3, [0, 2, 3]];
+    const expected_path_2: Path = [0, 3, [0, 1, 3]];
+    expect(shortest_paths(test_graph, 0, 3)).toEqual(list(expected_path_1,
+                                                          expected_path_2));
 });
 
 test('Shortest path from node 0 to 1 should be 0-1', () => {
-    const expected_path: Path = [0, 1, [1]];
-    expect(shortest_paths(test_graph, 0, 1)).toEqual(1);
+    const expected_path: Path = [0, 2, [0, 1]];
+    expect(shortest_paths(test_graph, 0, 1)).toEqual(list(expected_path));
 });
 
-test('Shortest path from node 0 to 6 should be 0-2-5-6', () => {
-    const expected_path: Path = [0, 1, [1]];
-    expect(shortest_paths(test_graph, 0, 6)).toEqual(3);
+test('Shortest path from node 0 to 6 should be 0-1-5-6', () => {
+    const expected_path: Path = [0, 4, [0, 1, 5, 6]];
+    expect(shortest_paths(test_graph, 0, 6)).toEqual(list(expected_path));
 });
 
 

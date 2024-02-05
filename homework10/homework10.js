@@ -87,7 +87,7 @@ function shortest_paths(_a, start, end) {
         (0, list_1.for_each)(function (x) {
             var parents = previous[x];
             if (!(0, list_1.is_null)(parents)) {
-                if (result[x] <= result[(0, list_1.head)(parents)]) {
+                if (result[current] <= result[(0, list_1.head)(parents)]) {
                     previous[x] = (0, list_1.append)(previous[x], (0, list_1.list)(current));
                 }
                 else { }
@@ -102,33 +102,41 @@ function shortest_paths(_a, start, end) {
     while (!(0, queue_array_1.is_empty)(pending)) {
         _loop_1();
     }
-    //const current_path: Path = empty<number>();
+    var current_path = (0, queue_array_1.empty)();
     // const current_path: Array<number> = [];
     // let current_node = end;
     // let i = end;
     // while (current_node !== start) {
     //     if (is_null(previous[i]) && )
     // }
-    function path_stepper(start, current, path) {
-        var parents = previous[current];
-        if (!(0, list_1.is_null)(parents) && parents.length < 1) {
-            //path_stepper(start, head(parents), path);
+    function path_stepper() {
+        var paths = (0, list_1.list)();
+        function helper(current, path) {
+            var parents = previous[current];
+            var updated_path = (0, list_1.pair)(current, path);
+            if (current === start) {
+                paths = (0, list_1.pair)(list_to_path(updated_path), paths);
+                console.log(paths);
+            }
+            (0, list_1.for_each)(function (node) {
+                (0, list_1.pair)(current, helper(node, updated_path));
+            }, parents);
         }
-        return path;
+        helper(end, (0, list_1.list)());
+        return paths;
     }
-    // current_path.push(start);
-    // current_path.reverse();
-    //enqueue(start, current_path)
-    // const reverse_path = empty<number>();
-    // for (let i = 0; i < current_path.length ; i++) {
-    //     enqueue(qhead(current_path), reverse_path);
-    //     dequeue(current_path);
-    // }
-    //console.log("path", current_path);
-    // console.log("result", result);
-    // console.log("shortest", result[end]);
+    function list_to_path(path) {
+        var new_path = (0, queue_array_1.empty)();
+        (0, list_1.for_each)(function (node) { return (0, queue_array_1.enqueue)(node, new_path); }, path);
+        console.log("new_path:");
+        (0, queue_array_1.display_queue)(new_path);
+        return new_path;
+    }
+    console.log("path", current_path);
+    console.log("result", result);
+    console.log("shortest", result[end]);
     console.log("previous", previous);
-    return path_stepper(start, end, (0, list_1.list)());
+    return path_stepper();
 }
 exports.shortest_paths = shortest_paths;
 var test_graph = {
@@ -136,7 +144,7 @@ var test_graph = {
     adj: [(0, list_1.list)(1, 2), (0, list_1.list)(3, 5), (0, list_1.list)(3, 4), (0, list_1.list)(4),
         (0, list_1.list)(5), (0, list_1.list)(6), (0, list_1.list)()]
 };
-console.log(shortest_paths(test_graph, 0, 3));
+console.log(shortest_paths(test_graph, 0, 1));
 // TASK 2
 /**
  * Topological sort of a graph.
