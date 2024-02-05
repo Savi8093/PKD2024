@@ -1,13 +1,14 @@
 // extend as needed
 import {
-    type List, list, filter, for_each, append
+    type List, list, filter, for_each, append, is_null, head, tail
 } from '../lib/list';
 import {
-    type Queue, empty, is_empty, enqueue, dequeue, head as qhead
+    type Queue, empty, is_empty, enqueue, dequeue, head as qhead, display_queue
 } from '../lib/queue_array';
 import {
     type ListGraph
 } from '../lib/graphs';
+import path = require('path');
 
 export type Path = Queue<number>;
 
@@ -38,7 +39,8 @@ const black = 3;
  * @param initial the id of the starting node. Default 0.
  * @returns A queue with the visited nodes in visiting order.
  */
-export function lg_bfs_visit_order({adj, size}: ListGraph, initial: number = 0): Queue<number> {
+export function lg_bfs_visit_order({adj, size}: ListGraph,
+                                   initial: number = 0): Queue<number> {
     const result  = empty<number>();
     const pending = empty<number>();
     const colour  = build_array(size, _ => white);
@@ -55,12 +57,14 @@ export function lg_bfs_visit_order({adj, size}: ListGraph, initial: number = 0):
     while (!is_empty(pending)) {
         const current = qhead(pending);
         dequeue(pending);
-        for_each(bfs_visit, filter(node => colour[node] === white, adj[current]));
+        for_each(bfs_visit, filter(node => colour[node] === white,
+                                   adj[current]));
         colour[current] = black;
     }
-
     return result;
 }
+
+
 
 /**
  * Find all shortest paths in a graph between two nodes.
@@ -72,40 +76,86 @@ export function lg_bfs_visit_order({adj, size}: ListGraph, initial: number = 0):
  */
 export function shortest_paths({adj, size}: ListGraph,
                                start: number,
-                               end: number): List<Path> | Path {
+                               end: number): List<Path> | any {
+    const unvisited = -1;
+
     const result  = build_array(size, _ => -1); // Initialize distances to -1
     const pending = empty<number>();
-    const colour  = build_array(size, _ => white);
-    const paths: List<Path> = list();
+    const colour = build_array(size, _ => white);
+    const previous: Array<List<number>> = build_array(size, _ => list());
     let distance = 0;
 
     // visit a white node
     function bfs_visit(current: number) {
-
-        colour[current] = grey;
         result[current] = distance;
+        colour[current] = grey;
+
         //console.log(current, distance);
         if (current === end) {
-            append(paths, list(current_path));
+            //append(paths, list(current_path));
         } else {
             enqueue(current, pending);
         }
     }
 
     bfs_visit(start);
-    const current_path: Path = empty<number>();
 
     while (!is_empty(pending)) {
         const current = qhead(pending);
-        enqueue(current, current_path);
         dequeue(pending);
         distance = result[current] + 1;
-        for_each(bfs_visit, filter(node => colour[node] === white, adj[current]));
+        const children = filter(node => colour[node] === white, adj[current]);
+
+        for_each(x => {
+            const parents = previous[x];
+            if (!is_null(parents)) {
+                if (result[x] <= result[head(parents)]) {
+                    previous[x] = append(previous[x], list(current))
+                } else {}
+            } else {
+                previous[x] = append(previous[x], list(current));
+            }
+            
+
+        }, adj[current]);
+        for_each(bfs_visit, children);
         colour[current] = black;
 
     }
-    console.log(result);
-    return current_path;
+    //const current_path: Path = empty<number>();
+    // const current_path: Array<number> = [];
+    // let current_node = end;
+    // let i = end;
+    // while (current_node !== start) {
+    //     if (is_null(previous[i]) && )
+    // }
+
+    function path_stepper(start: number,
+                          current: number,
+                          path: List<number>): List<number> {
+        const parents = previous[current];
+        if (!is_null(parents) && parents.length < 1) {
+            //path_stepper(start, head(parents), path);
+        }
+        return path;
+    }
+
+    // current_path.push(start);
+    // current_path.reverse();
+    //enqueue(start, current_path)
+    // const reverse_path = empty<number>();
+    // for (let i = 0; i < current_path.length ; i++) {
+    //     enqueue(qhead(current_path), reverse_path);
+    //     dequeue(current_path);
+    // }
+
+    //console.log("path", current_path);
+
+    // console.log("result", result);
+    // console.log("shortest", result[end]);
+    console.log("previous", previous);
+
+    return path_stepper(start, end, list());
 }
 
 const test_graph: ListGraph = {
@@ -114,7 +164,7 @@ const test_graph: ListGraph = {
           list(5), list(6), list()]
 }
 
-console.log(shortest_paths(test_graph, 1, 5));
+console.log(shortest_paths(test_graph, 0, 3));
 
 
 // TASK 2
