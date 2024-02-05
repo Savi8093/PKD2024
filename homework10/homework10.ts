@@ -1,12 +1,12 @@
 // extend as needed
 import {
-    type List, list, filter, for_each, append, is_null, head, pair
+    type List, list, filter, for_each, append, is_null, head, pair, enum_list
 } from '../lib/list';
 import {
     type Queue, empty, is_empty, enqueue, dequeue, head as qhead, display_queue
 } from '../lib/queue_array';
 import {
-    type ListGraph
+    type ListGraph, lg_transpose
 } from '../lib/graphs';
 import path = require('path');
 
@@ -152,9 +152,36 @@ export function shortest_paths({adj, size}: ListGraph,
  * @param param0 a directed acyclic graph
  * @returns Returns one valid topological sort of the input graph.
  */
-export function topological_sort({adj, size}: ListGraph): Queue<number> {
-    // your code here
-    return empty();
+export function topological_sort({adj, size}: ListGraph): boolean {
+    const result = empty<number>();
+    const in_degree = build_array(size, _ => 0);
+    const queue = empty<number>();
+
+    // Calculate in-degree for each node
+    for (let u = 0; u < size; u++) {
+        adj?[u].forEach(v => in_degree[v]++) : undefined;
+    }
+    console.log("in_deg; ", JSON.stringify(in_degree));
+    // Enqueue nodes with in-degree 0
+    for (let i = 0; i < size; i++) {
+        if (in_degree[i] === 0) {
+            enqueue(i, queue);
+        }
+    }
+    console.log("queue; ", JSON.stringify(queue));
+    while (!is_empty(queue)) {
+        const u = qhead(queue);
+        dequeue(queue);
+        enqueue(u, result);
+        adj?[u].forEach(v => {
+            in_degree[v]--;
+            if (in_degree[v] === 0) {
+                enqueue(v, queue);
+            }
+        }) : undefined;
+    }
+    console.log("result; ",JSON.stringify(result));
+    return true;
 }
 
 
@@ -167,6 +194,43 @@ export function topological_sort({adj, size}: ListGraph): Queue<number> {
  */
 export function is_topological_sort({adj, size}: ListGraph,
                                     tsort: Queue<number>): boolean {
-    // your code here
     return false;
 }
+
+
+export function lg_bfs_topological_sort(lg: ListGraph,
+    restart_order: List<number> = null): Queue<number> {
+    const {adj, size} = lg_transpose(lg); //MODIFIED
+
+    const result = empty<number>();
+    const colour  = build_array(size, _ => white);
+    if (restart_order === null) {  // MODIFIED
+        restart_order = enum_list(0, size - 1);
+    } else {}
+
+    function lg_bfs_enqueue_finishing_order(initial: number): void {
+        const pending = empty<number>();
+
+        function bfs_visit(current: number) {
+            colour[current] = grey;
+            enqueue(current, pending);
+        }
+
+        if (colour[initial] === white) { // MODIFIED
+            bfs_visit(initial);
+        } else {}
+
+        while (!is_empty(pending)) {
+            const current = qhead(pending);
+            dequeue(pending);
+            for_each(bfs_visit, filter(node => colour[node] === white, adj[current]));
+            colour[current] = black;
+            enqueue(current, result); // MODIFIED
+        }
+    }
+
+    for_each(lg_bfs_enqueue_finishing_order, restart_order); //MODIFIED
+
+    return result;
+}
+

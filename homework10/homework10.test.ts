@@ -54,3 +54,12 @@ test('Shortest path from node 0 to 6 should be 0-1-5-6', () => {
 
 // TASK 2: write 5 unit tests to test topological_sort
 // at least 3 of those tests must use the function is_topological_sort
+const test_graph1: ListGraph = {
+    size: 4,
+    adj: [list(1, 2), list(3, 5), list(3, 4), list()] }
+
+
+test('Sort test_graph', () => {
+ //   const expected_order: Queue<number> = [0, 4, []]
+    expect(topological_sort(test_graph)).toEqual(true);
+});
