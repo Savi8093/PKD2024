@@ -9,6 +9,7 @@ import {
     type ListGraph, lg_transpose
 } from '../lib/graphs';
 import path = require('path');
+import { allowedNodeEnvironmentFlags } from 'process';
 
 export type Path = Queue<number>;
 
@@ -124,14 +125,14 @@ export function shortest_paths({adj, size}: ListGraph,
 
         // Helper function for recursive call
         function helper(current: number,
-            path: List<number>) {
+                        path: List<number>) {
             const parents = previous[current];
             let updated_path = pair(current, path);
             if (current === start) {
                 paths = pair(list_to_path(updated_path), paths);
             } else {}
             for_each(node => {
-                pair(current, helper(node, updated_path))
+                helper(node, updated_path);
             }, parents);
         }
         helper(end, list());
@@ -140,7 +141,7 @@ export function shortest_paths({adj, size}: ListGraph,
 
     function list_to_path(path: List<number>): Path {
         const new_path: Path = empty<number>();
-        for_each(node => enqueue(node, new_path),path);
+        for_each(node => enqueue(node, new_path), path);
         return new_path;
     }
     return path_stepper();
@@ -152,38 +153,46 @@ export function shortest_paths({adj, size}: ListGraph,
  * @param param0 a directed acyclic graph
  * @returns Returns one valid topological sort of the input graph.
  */
-export function topological_sort({adj, size}: ListGraph): boolean {
+export function topological_sort({adj, size}: ListGraph): Queue<number> {
     const result = empty<number>();
     const in_degree = build_array(size, _ => 0);
     const queue = empty<number>();
 
     // Calculate in-degree for each node
     for (let u = 0; u < size; u++) {
-        adj?[u].forEach(v => in_degree[v]++) : undefined;
+        for_each(v => in_degree[v]++, adj[u]);
     }
-    console.log("in_deg; ", JSON.stringify(in_degree));
     // Enqueue nodes with in-degree 0
     for (let i = 0; i < size; i++) {
         if (in_degree[i] === 0) {
             enqueue(i, queue);
         }
     }
-    console.log("queue; ", JSON.stringify(queue));
     while (!is_empty(queue)) {
         const u = qhead(queue);
         dequeue(queue);
         enqueue(u, result);
-        adj?[u].forEach(v => {
+        for_each(v => {
             in_degree[v]--;
             if (in_degree[v] === 0) {
                 enqueue(v, queue);
             }
-        }) : undefined;
+        }, adj[u]);
     }
-    console.log("result; ",JSON.stringify(result));
-    return true;
+    return result;
 }
 
+const test_graph: ListGraph = {
+    size: 6,
+    adj: [list(1, 3), list(4, 2), list(5), list(2, 5),
+          list(), list()]
+}
+
+const test_graph1: ListGraph = {
+    size: 7,
+    adj: [list(2, 1), list(5, 3), list(3, 4), list(4),
+        list(5), list(6), list()]
+};
 
 /**
  * Check whether a topological sort of a graph is valid.
@@ -194,43 +203,42 @@ export function topological_sort({adj, size}: ListGraph): boolean {
  */
 export function is_topological_sort({adj, size}: ListGraph,
                                     tsort: Queue<number>): boolean {
-    return false;
-}
 
+    let is_top = true;
+    const sort = tsort[2];
 
-export function lg_bfs_topological_sort(lg: ListGraph,
-    restart_order: List<number> = null): Queue<number> {
-    const {adj, size} = lg_transpose(lg); //MODIFIED
-
-    const result = empty<number>();
-    const colour  = build_array(size, _ => white);
-    if (restart_order === null) {  // MODIFIED
-        restart_order = enum_list(0, size - 1);
+    // Check whether all nodes in the graph appear in the sort
+    const all_nodes: Array<number> = lg_bfs_visit_order({adj, size})[2];
+    if (all_nodes.length !== sort.length) {
+        return false;
     } else {}
 
-    function lg_bfs_enqueue_finishing_order(initial: number): void {
-        const pending = empty<number>();
-
-        function bfs_visit(current: number) {
-            colour[current] = grey;
-            enqueue(current, pending);
-        }
-
-        if (colour[initial] === white) { // MODIFIED
-            bfs_visit(initial);
+    all_nodes.forEach(node => {
+        if (!sort.includes(node)) {
+            is_top = false;
         } else {}
+    });
 
-        while (!is_empty(pending)) {
-            const current = qhead(pending);
-            dequeue(pending);
-            for_each(bfs_visit, filter(node => colour[node] === white, adj[current]));
-            colour[current] = black;
-            enqueue(current, result); // MODIFIED
-        }
-    }
+    // Check whether all nodes in the sort appear in the graph
+    sort.forEach(node => {
+        if (!all_nodes.includes(node)) {
+            is_top = false;
+        } else {}
+    });
 
-    for_each(lg_bfs_enqueue_finishing_order, restart_order); //MODIFIED
+    // Return false if previous steps have failed before checking sorted order
+    if (!is_top) {
+        return false;
+    } else {}
 
-    return result;
+    // Check if nodes appear after their dependencies
+    sort.forEach(node => {
+        for_each(child => {
+            if (sort.indexOf(child) < sort.indexOf(node)) {
+                is_top = false;
+            } else {}
+        },adj[node]);
+    });
+    return is_top;
 }
 

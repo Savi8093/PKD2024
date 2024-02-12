@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.lg_bfs_topological_sort = exports.is_topological_sort = exports.topological_sort = exports.shortest_paths = exports.lg_bfs_visit_order = void 0;
+exports.is_topological_sort = exports.topological_sort = exports.shortest_paths = exports.lg_bfs_visit_order = void 0;
 // extend as needed
 var list_1 = require("../lib/list");
 var queue_array_1 = require("../lib/queue_array");
-var graphs_1 = require("../lib/graphs");
 // TASK 1
 // Build an array based on a function computing the item at each index
 function build_array(size, content) {
@@ -111,7 +110,7 @@ function shortest_paths(_a, start, end) {
             }
             else { }
             (0, list_1.for_each)(function (node) {
-                (0, list_1.pair)(current, helper(node, updated_path));
+                helper(node, updated_path);
             }, parents);
         }
         helper(end, (0, list_1.list)());
@@ -138,31 +137,38 @@ function topological_sort(_a) {
     var queue = (0, queue_array_1.empty)();
     // Calculate in-degree for each node
     for (var u = 0; u < size; u++) {
-        adj ? [u].forEach(function (v) { return in_degree[v]++; }) : undefined;
+        (0, list_1.for_each)(function (v) { return in_degree[v]++; }, adj[u]);
     }
-    console.log("in_deg; ", JSON.stringify(in_degree));
     // Enqueue nodes with in-degree 0
     for (var i = 0; i < size; i++) {
         if (in_degree[i] === 0) {
             (0, queue_array_1.enqueue)(i, queue);
         }
     }
-    console.log("queue; ", JSON.stringify(queue));
     while (!(0, queue_array_1.is_empty)(queue)) {
         var u = (0, queue_array_1.head)(queue);
         (0, queue_array_1.dequeue)(queue);
         (0, queue_array_1.enqueue)(u, result);
-        adj ? [u].forEach(function (v) {
+        (0, list_1.for_each)(function (v) {
             in_degree[v]--;
             if (in_degree[v] === 0) {
                 (0, queue_array_1.enqueue)(v, queue);
             }
-        }) : undefined;
+        }, adj[u]);
     }
-    console.log("result; ", JSON.stringify(result));
-    return true;
+    return result;
 }
 exports.topological_sort = topological_sort;
+var test_graph = {
+    size: 6,
+    adj: [(0, list_1.list)(1, 3), (0, list_1.list)(4, 2), (0, list_1.list)(5), (0, list_1.list)(2, 5),
+        (0, list_1.list)(), (0, list_1.list)()]
+};
+var test_graph1 = {
+    size: 7,
+    adj: [(0, list_1.list)(2, 1), (0, list_1.list)(5, 3), (0, list_1.list)(3, 4), (0, list_1.list)(4),
+        (0, list_1.list)(5), (0, list_1.list)(6), (0, list_1.list)()]
+};
 /**
  * Check whether a topological sort of a graph is valid.
  * @param param0 a directed acyclic graph
@@ -172,37 +178,41 @@ exports.topological_sort = topological_sort;
  */
 function is_topological_sort(_a, tsort) {
     var adj = _a.adj, size = _a.size;
-    return false;
-}
-exports.is_topological_sort = is_topological_sort;
-function lg_bfs_topological_sort(lg, restart_order) {
-    if (restart_order === void 0) { restart_order = null; }
-    var _a = (0, graphs_1.lg_transpose)(lg), adj = _a.adj, size = _a.size; //MODIFIED
-    var result = (0, queue_array_1.empty)();
-    var colour = build_array(size, function (_) { return white; });
-    if (restart_order === null) { // MODIFIED
-        restart_order = (0, list_1.enum_list)(0, size - 1);
+    var is_top = true;
+    var sort = tsort[2];
+    // Check whether all nodes in the graph appear in the sort
+    var all_nodes = lg_bfs_visit_order({ adj: adj, size: size })[2];
+    if (all_nodes.length !== sort.length) {
+        return false;
     }
     else { }
-    function lg_bfs_enqueue_finishing_order(initial) {
-        var pending = (0, queue_array_1.empty)();
-        function bfs_visit(current) {
-            colour[current] = grey;
-            (0, queue_array_1.enqueue)(current, pending);
-        }
-        if (colour[initial] === white) { // MODIFIED
-            bfs_visit(initial);
+    all_nodes.forEach(function (node) {
+        if (!sort.includes(node)) {
+            is_top = false;
         }
         else { }
-        while (!(0, queue_array_1.is_empty)(pending)) {
-            var current = (0, queue_array_1.head)(pending);
-            (0, queue_array_1.dequeue)(pending);
-            (0, list_1.for_each)(bfs_visit, (0, list_1.filter)(function (node) { return colour[node] === white; }, adj[current]));
-            colour[current] = black;
-            (0, queue_array_1.enqueue)(current, result); // MODIFIED
+    });
+    // Check whether all nodes in the sort appear in the graph
+    sort.forEach(function (node) {
+        if (!all_nodes.includes(node)) {
+            is_top = false;
         }
+        else { }
+    });
+    // Return false if previous steps have failed before checking sorted order
+    if (!is_top) {
+        return false;
     }
-    (0, list_1.for_each)(lg_bfs_enqueue_finishing_order, restart_order); //MODIFIED
-    return result;
+    else { }
+    // Check if nodes appear after their dependencies
+    sort.forEach(function (node) {
+        (0, list_1.for_each)(function (child) {
+            if (sort.indexOf(child) < sort.indexOf(node)) {
+                is_top = false;
+            }
+            else { }
+        }, adj[node]);
+    });
+    return is_top;
 }
-exports.lg_bfs_topological_sort = lg_bfs_topological_sort;
+exports.is_topological_sort = is_topological_sort;

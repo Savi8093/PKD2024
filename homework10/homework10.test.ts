@@ -54,12 +54,25 @@ test('Shortest path from node 0 to 6 should be 0-1-5-6', () => {
 
 // TASK 2: write 5 unit tests to test topological_sort
 // at least 3 of those tests must use the function is_topological_sort
-const test_graph1: ListGraph = {
-    size: 4,
-    adj: [list(1, 2), list(3, 5), list(3, 4), list()] }
 
+test('Returns empty queue if graph is empty', () => {
+    const expected_order: Queue<number> = empty<number>();
+    expect(topological_sort({adj: [], size: 0})).toEqual(expected_order);
+});
 
-test('Sort test_graph', () => {
- //   const expected_order: Queue<number> = [0, 4, []]
-    expect(topological_sort(test_graph)).toEqual(true);
+test('Returns correctly sorted graph', () => {
+    const expected_order: Queue<number> = [0,7,[0,1,2,3,4,5,6]];
+    expect(topological_sort(test_graph)).toEqual(expected_order);
+});
+
+test('Returns a valid topological sort', () => {
+    expect(is_topological_sort(test_graph, topological_sort(test_graph))).toBe(true);
+});
+
+test('Empty queue is not a valid topological sort', () => {
+    expect(is_topological_sort(test_graph, empty<number>())).toBe(false);
+});
+
+test('Nodes sorted in wrong order', () => {
+    expect(is_topological_sort(test_graph, [0,7,[2,3,4,1,5,6,7]])).toBe(false);
 });
